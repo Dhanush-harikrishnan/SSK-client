@@ -252,6 +252,11 @@
     border-color: #00C2A8;
     box-shadow: 0 0 0 3px rgba(0, 194, 168, 0.15);
   }
+
+  select.input-dark option {
+    background-color: #0C1E30; /* Dark blue matching theme */
+    color: white;
+  }
 }
 
 @layer utilities {
