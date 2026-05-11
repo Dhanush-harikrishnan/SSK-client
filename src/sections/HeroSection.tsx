@@ -328,7 +328,7 @@ export const HeroSection = () => {
 
       {/* Video Dialog */}
       <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-        <DialogContent className="max-w-4xl w-[95vw] p-0 bg-deep-navy border-electric-teal/30">
+        <DialogContent className="max-w-6xl w-[95vw] sm:w-[90vw] md:w-[85vw] p-0 bg-deep-navy border-electric-teal/30">
           <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-white text-xl">Demo Video</DialogTitle>
           </DialogHeader>
