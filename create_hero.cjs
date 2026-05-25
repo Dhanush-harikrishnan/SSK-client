@@ -1,4 +1,7 @@
-import { useEffect, useRef } from "react";
+const fs = require('fs');
+const path = require('path');
+
+const content = `import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ArrowRight } from "@/components/Icons";
 
@@ -102,13 +105,13 @@ export const HeroSection = () => {
           </h1>
 
           <p className="hero-text-elem text-lg sm:text-xl text-charcoal-light max-w-[550px] mb-10 leading-relaxed font-medium">
-            Chemical-free scale removal, electrochlorination, and ETP/STP systems. <strong className="text-charcoal font-bold">OEM titanium anode supply available for manufacturers & integrators worldwide.</strong>
+            AquaRedox completely eliminates scale buildup using industrial-grade MMO-coated titanium electrodes. <strong className="text-charcoal font-bold">Zero salt. Zero chemicals. Zero maintenance.</strong> Ultimate performance engineered for your enterprise.
           </p>
 
           <div className="hero-text-elem flex flex-col sm:flex-row items-center gap-4 w-full h-full sm:w-auto relative z-20">
             <a href="#contact" className="group w-full sm:w-auto relative inline-flex justify-center items-center gap-2 px-8 py-4 bg-charcoal text-white font-semibold rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(10,37,64,0.3)]" onClick={(e) => scrollTo(e, "contact")}>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              Get a Free Quote <span className="group-hover:translate-x-1 transition-transform inline-flex"><ArrowRight size={18} /></span>
+              Get a Free Quote <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </a>
             
             <button 
@@ -141,7 +144,7 @@ export const HeroSection = () => {
 
                  {/* Moving Ions (Generated via Array for CSS animation) */}
                  {Array.from({ length: 25 }).map((_, i) => (
-                    <div key={i} className="ion-particle absolute bottom-[-20px] w-1.5 md:w-2.5 h-1.5 md:h-2.5 rounded-full bg-white/90 blur-[1px] shadow-[0_0_5px_white]" style={{ left: `${15 + Math.random() * 70}%` }} />
+                    <div key={i} className="ion-particle absolute bottom-[-20px] w-1.5 md:w-2.5 h-1.5 md:h-2.5 rounded-full bg-white/90 blur-[1px] shadow-[0_0_5px_white]" style={{ left: \`\${15 + Math.random() * 70}%\` }} />
                  ))}
                  
                  {/* Water gradient overlay */}
@@ -185,3 +188,8 @@ export const HeroSection = () => {
     </section>
   );
 };
+`;
+
+const filePath = path.join(__dirname, 'src/sections/HeroSection.tsx');
+fs.writeFileSync(filePath, content);
+console.log('Innovative Split-Layout Hero created successfully!');

@@ -1,233 +1,84 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import * as THREE from "three";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { SectionLabel } from "@/components/SectionLabel";
 import { ArrowRight } from "@/components/Icons";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const scaleRemoverFeatures = [
-  "MMO titanium electrodes",
-  "Chemical-free treatment",
-  "Self-cleaning design",
-  "Advanced monitoring dashboard",
-  "Easy installation",
-  "Prevents scale permanently",
-];
-
-const etpFeatures = [
-  "Primary & secondary treatment",
-  "Pressure Sand Filter (PSF)",
-  "Activated Carbon Filter (ACF)",
-  "Reverse Osmosis (RO) & Ultra Filtration (UF)",
-  "DM/MB plants for zero discharge",
-  "Custom engineering for your site",
-];
-
-const otherFeatures = [
-  "Electro-Chlorinator systems for safe water disinfection",
-  "Custom titanium fabrication — pumps, blowers, impellers",
-  "Industrial components built to specification",
-  "On-site installation & commissioning",
-  "Annual maintenance contracts available",
+const products = [
+  {
+    title: "Electrolysis Scale Remover",
+    desc: "Chemical-free hard water treatment using MMO titanium electrodes. Converts calcium/magnesium ions permanently. No salt, no chemicals.",
+    badge: "Best Seller ⭐",
+    options: ["Full System", "Anode Only (OEM Supply)"],
+    highlight: true
+  },
+  {
+    title: "Electrochlorinator System",
+    desc: "On-site chlorine generation system (scrubber type) with energiser unit. Ideal for swimming pools, cooling towers, and water disinfection.",
+    options: ["Full Set with Energiser", "Anode Only (OEM Supply)"],
+    highlight: false
+  },
+  {
+    title: "E-STP — Electrolytic Sewage Treatment",
+    desc: "Chemical-free electrolytic sewage treatment using titanium electrodes. Compact, low-maintenance, and suitable for residential/commercial complexes.",
+    options: ["Full System"],
+    highlight: false
+  },
+  {
+    title: "E-ETP — Industrial Effluent Treatment",
+    desc: "Electrolytic effluent treatment plants for industrial wastewater. Handles heavy metals, BOD, COD reduction without chemical dosing.",
+    options: ["Full System"],
+    highlight: false
+  },
+  {
+    title: "Titanium Anode Manufacturing (OEM)",
+    desc: "MMO-coated titanium anodes manufactured to specification. Supplied to water treatment companies, system integrators, and plant builders globally.",
+    badge: "B2B / OEM",
+    options: ["Standard Shapes", "Custom Fabrication"],
+    highlight: true
+  },
+  {
+    title: "Automatic Scale Removal Anode",
+    desc: "Standalone titanium anode for integration into existing water systems or OEM assemblies. Suitable for boilers, chillers, and cooling towers.",
+    options: ["Standalone Anode", "Full System"],
+    highlight: false
+  }
 ];
 
 export const ProductsSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const text3dRef = useRef<HTMLDivElement>(null);
-
-  // Scroll reveal
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || window.innerWidth < 768) return;
-
-    const items = section.querySelectorAll(".reveal-item");
-    gsap.set(items, { opacity: 0, y: 40 });
-    const triggers: ScrollTrigger[] = [];
-    items.forEach((item, i) => {
-      const st = ScrollTrigger.create({
-        trigger: item,
-        start: "top 85%",
-        onEnter: () => {
-          gsap.to(item, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out", delay: i * 0.15 });
-        },
-        once: true,
-      });
-      triggers.push(st);
-    });
-    return () => triggers.forEach(t => t.kill());
-  }, []);
-
-  // 3D Text
-  useEffect(() => {
-    const container = text3dRef.current;
-    if (!container || window.innerWidth < 768) return;
-
-    let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer;
-    let textMesh: THREE.Mesh;
-    let animId: number;
-
-    const initScene = () => {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.z = 300;
-
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.appendChild(renderer.domElement);
-
-      const loader = new FontLoader();
-      loader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", (font) => {
-        const geo = new TextGeometry("AQUAREDOX", {
-          font,
-          size: 40,
-          depth: 30,
-          bevelEnabled: true,
-          bevelThickness: 4,
-          bevelSize: 3,
-          bevelSegments: 3,
-        });
-        geo.computeBoundingBox();
-        if (geo.boundingBox) {
-          geo.translate(-geo.boundingBox.max.x / 2, -geo.boundingBox.max.y / 2, 0);
-        }
-        const mat = new THREE.MeshBasicMaterial({
-          color: 0x00C2A8,
-          transparent: true,
-          opacity: 0.15,
-        });
-        textMesh = new THREE.Mesh(geo, mat);
-        scene.add(textMesh);
-      });
-
-      let scrollRotX = 0;
-      const st = ScrollTrigger.create({
-        trigger: container,
-        start: "top bottom",
-        end: "bottom top",
-        onUpdate: (self) => {
-          scrollRotX = (self.progress - 0.5) * 0.6;
-        },
-      });
-
-      const animate = () => {
-        animId = requestAnimationFrame(animate);
-        if (textMesh) {
-          textMesh.rotation.y += 0.002;
-          textMesh.rotation.x = scrollRotX;
-        }
-        renderer.render(scene, camera);
-      };
-      animate();
-
-      const handleResize = () => {
-        if (!container) return;
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-      };
-      window.addEventListener("resize", handleResize);
-
-      return { st, handleResize };
-    };
-
-    const cleanup = initScene();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      if (cleanup) {
-        cleanup.st.kill();
-        window.removeEventListener("resize", cleanup.handleResize);
-      }
-      if (container.contains(renderer?.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
-    };
-  }, []);
-
-  const handleCTAClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <section ref={sectionRef} id="products" className="bg-off-white section-padding relative overflow-hidden">
-      {/* 3D Text Background */}
-      <div ref={text3dRef} className="absolute inset-0 z-0 hidden md:block pointer-events-none" />
-
-      <div className="container-main relative z-[1]">
-        <div className="text-center mb-12">
-          <div className="reveal-item"><SectionLabel text="SOLUTIONS ENGINEERED FOR EVERY SCALE" /></div>
-          <h2 className="reveal-item text-h2 text-charcoal mb-4">Solutions engineered for every scale</h2>
-          <p className="reveal-item text-body text-charcoal-light">
-            From a single household to a 10,000-litre-per-day industrial plant — we have you covered.
+    <section id="products" className="bg-off-white section-padding">
+      <div className="container-main">
+        <div className="text-center mb-16">
+          <h2 className="text-h2 text-charcoal mb-4">Our Products & Systems</h2>
+          <p className="text-body text-charcoal-light max-w-2xl mx-auto">
+            Engineered precision for water treatment. From complete turnkey plants to OEM titanium anode components.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Card 1 - Highlighted */}
-          <div className="reveal-item card-highlighted flex flex-col">
-            <span className="inline-block self-start px-3 py-1 bg-electric-teal text-white text-[0.7rem] font-semibold rounded-full mb-3">
-              FLAGSHIP PRODUCT
-            </span>
-            <h3 className="text-h2 text-charcoal font-bold mb-2">SSK Scale Remover</h3>
-            <div className="text-amber-gold font-bold text-2xl mb-4">Custom Pricing</div>
-            <p className="text-body-sm text-charcoal-light mb-5">
-              The flagship AquaRedox unit for homes, apartments, offices & factories.
-            </p>
-            <ul className="space-y-2 mb-6 flex-1">
-              {scaleRemoverFeatures.map((f) => (
-                <li key={f} className="text-body-sm text-charcoal flex items-start gap-2">
-                  <span className="text-electric-teal mt-1">●</span> {f}
-                </li>
-              ))}
-            </ul>
-            <a href="#contact" onClick={(e) => handleCTAClick(e, "contact")} className="btn-primary w-full">
-              Request a Quote <ArrowRight size={16} />
-            </a>
-          </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((p, i) => (
+            <div key={i} className={`card-${p.highlight ? 'highlighted' : 'standard'} flex flex-col h-full bg-white relative`}>
+              {p.badge && (
+                <span className={`absolute top-0 right-0 rounded-bl-lg px-3 py-1 text-xs font-bold text-white ${p.highlight ? 'bg-electric-teal' : 'bg-charcoal'}`}>
+                  {p.badge}
+                </span>
+              )}
+              <h3 className="text-xl text-charcoal font-bold mb-3 pr-24">{p.title}</h3>
+              <p className="text-sm text-charcoal-light mb-6 flex-1">{p.desc}</p>
+              
+              <div className="bg-gray-50 border border-border-light rounded-md p-4 mb-6">
+                <p className="text-xs font-bold uppercase tracking-wider text-charcoal/60 mb-2">Available As:</p>
+                <ul className="space-y-1.5">
+                  {p.options.map(opt => (
+                    <li key={opt} className="text-sm font-semibold text-deep-navy flex items-center gap-2">
+                       <span className="text-electric-teal">✔</span> {opt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* Card 2 - ETP/STP */}
-          <div className="reveal-item card-standard flex flex-col">
-            <h3 className="text-h3 text-charcoal font-semibold mb-2">Sewage & Effluent Treatment</h3>
-            <div className="text-amber-gold font-semibold text-2xl mb-4">Custom Pricing</div>
-            <p className="text-body-sm text-charcoal-light mb-5">
-              Complete industrial wastewater solutions — PSF, ACF, Iron Remover, RO, UF, DM/MB plants. Custom-designed for your discharge norms and compliance requirements.
-            </p>
-            <ul className="space-y-2 mb-6 flex-1">
-              {etpFeatures.map((f) => (
-                <li key={f} className="text-body-sm text-charcoal flex items-start gap-2">
-                  <span className="text-electric-teal mt-1">●</span> {f}
-                </li>
-              ))}
-            </ul>
-            <a href="#contact" onClick={(e) => handleCTAClick(e, "contact")} className="btn-secondary w-full">
-              Discuss Your Requirements <ArrowRight size={16} />
-            </a>
-          </div>
-
-          {/* Card 3 - Other Services */}
-          <div className="reveal-item card-standard flex flex-col">
-            <h3 className="text-h3 text-charcoal font-semibold mb-2">Other Engineering Services</h3>
-            <div className="text-amber-gold font-semibold text-2xl mb-4">Custom Pricing</div>
-            <p className="text-body-sm text-charcoal-light mb-5">
-              Specialised electrochemical and titanium fabrication services for industrial water treatment infrastructure.
-            </p>
-            <ul className="space-y-2 mb-6 flex-1">
-              {otherFeatures.map((f) => (
-                <li key={f} className="text-body-sm text-charcoal flex items-start gap-2">
-                  <span className="text-electric-teal mt-1">●</span> {f}
-                </li>
-              ))}
-            </ul>
-            <a href="#contact" onClick={(e) => handleCTAClick(e, "contact")} className="btn-secondary w-full">
-              Get in Touch <ArrowRight size={16} />
-            </a>
-          </div>
+              <a href="#contact" className="btn-secondary w-full group mt-auto hover:text-white" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                Enquire Now <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform inline" />
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </section>

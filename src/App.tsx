@@ -14,6 +14,8 @@ import { CaseStudiesSection } from "@/sections/CaseStudiesSection";
 import { FAQSection } from "@/sections/FAQSection";
 import { ContactSection } from "@/sections/ContactSection";
 import { FooterSection } from "@/sections/FooterSection";
+import { OEMBannerSection } from "@/sections/OEMBannerSection";
+import { CountriesSection } from "@/sections/CountriesSection";
 
 function App() {
   // Scroll-linked hue shift
@@ -45,6 +47,7 @@ function App() {
 
       <main id="main-content">
         <HeroSection />
+        <CountriesSection />
         <TrustBarSection />
         <SectionDivider variant="light-to-dark" />
         <ProblemSolutionSection />
@@ -54,7 +57,8 @@ function App() {
         <BenefitsGridSection />
         <SectionDivider variant="dark-to-light" />
         <ProductsSection />
-        <SectionDivider variant="light-to-dark" />
+        <OEMBannerSection />
+        <SectionDivider variant="dark-to-light" />
         <CaseStudiesSection />
         <SectionDivider variant="dark-to-light" />
         <FAQSection />

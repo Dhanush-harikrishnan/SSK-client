@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { EnvelopeIcon, PhoneIcon, WhatsAppIcon, MapPinIcon } from "@/components/Icons";
+const fs = require('fs');
+const path = require('path');
+
+const contactCode = `import { useState } from "react";
+import { Mail, Phone, WhatsApp, MapPin } from "@/components/Icons";
 
 export const ContactSection = () => {
   const [formState, setFormState] = useState({
@@ -35,7 +38,7 @@ export const ContactSection = () => {
             <div className="space-y-8 flex-1">
               <a href="tel:+916369658869" className="flex items-start gap-5 hover:text-electric-teal transition-colors group">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-electric-teal/20 transition-colors">
-                  <PhoneIcon size={24} />
+                  <Phone size={24} className="text-electric-teal" />
                 </div>
                 <div>
                   <p className="text-sm text-white/50 uppercase tracking-widest font-bold mb-1">Phone</p>
@@ -45,7 +48,7 @@ export const ContactSection = () => {
               
               <a href="mailto:info@ssktianode.com" className="flex items-start gap-5 hover:text-electric-teal transition-colors group">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-electric-teal/20 transition-colors">
-                  <EnvelopeIcon size={24} />
+                  <Mail size={24} className="text-electric-teal" />
                 </div>
                 <div>
                   <p className="text-sm text-white/50 uppercase tracking-widest font-bold mb-1">Email</p>
@@ -56,7 +59,7 @@ export const ContactSection = () => {
               
               <div className="flex items-start gap-5 group">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
-                  <MapPinIcon size={24} />
+                  <MapPin size={24} className="text-electric-teal" />
                 </div>
                 <div>
                   <p className="text-sm text-white/50 uppercase tracking-widest font-bold mb-1">Headquarters & Manufacturing</p>
@@ -70,7 +73,7 @@ export const ContactSection = () => {
             </div>
 
             <a href="https://wa.me/916369658869" target="_blank" rel="noopener noreferrer" className="mt-12 flex items-center justify-center gap-3 bg-[#25D366] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-[0_4px_20px_rgba(37,211,102,0.3)] hover:scale-105 hover:bg-[#1EBE5A] transition-all">
-              <WhatsAppIcon size={24} /> Chat with Engineering Team
+              <WhatsApp size={24} /> Chat with Engineering Team
             </a>
           </div>
 
@@ -147,4 +150,7 @@ export const ContactSection = () => {
       </div>
     </section>
   );
-};
+};`;
+
+fs.writeFileSync(path.join(__dirname, 'src/sections/ContactSection.tsx'), contactCode);
+console.log("Contact Section Updated for B2B requirements!");
