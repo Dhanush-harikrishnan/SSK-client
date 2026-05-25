@@ -75,7 +75,7 @@ export const NavigationBar = () => {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className={`relative text-white/90 hover:text-electric-teal transition-colors duration-200 text-[0.95rem] font-medium ${
+                className={`relative hover:text-electric-teal transition-colors duration-200 text-[0.95rem] font-medium ${scrolled ? "text-white/90" : "text-charcoal/90"} ${
                   activeSection === link.href.slice(1) ? "text-electric-teal" : ""
                 }`}
               >
@@ -98,7 +98,7 @@ export const NavigationBar = () => {
 
           {/* Mobile Hamburger */}
           <button
-            className="lg:hidden text-white p-2"
+            className={`lg:hidden p-2 ${scrolled ? "text-white" : "text-charcoal"}`}
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >

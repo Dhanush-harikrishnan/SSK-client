@@ -1,351 +1,187 @@
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ArrowDown, ArrowRight } from "@/components/Icons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position, 1.0);
-  }
-`;
-
-const fragmentShader = `
-  precision highp float;
-  uniform float u_time;
-  uniform vec2 u_mouse;
-  uniform vec2 u_resolution;
-  uniform float u_foldFrequency;
-  uniform float u_dissolveSpeed;
-  varying vec2 vUv;
-
-  float hash(vec2 p) {
-    p = fract(p * vec2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
-  }
-
-  float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    float a = hash(i);
-    float b = hash(i + vec2(1.0, 0.0));
-    float c = hash(i + vec2(0.0, 1.0));
-    float d = hash(i + vec2(1.0, 1.0));
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
-  }
-
-  float fbm(vec2 p) {
-    float val = 0.0;
-    float amp = 0.5;
-    float freq = 1.0;
-    for (int i = 0; i < 4; i++) {
-      val += amp * noise(p * freq);
-      freq *= 2.0;
-      amp *= 0.5;
-    }
-    return val;
-  }
-
-  float pattern(vec2 p) {
-    vec2 q = vec2(fbm(p), fbm(p + vec2(5.2, 1.3)));
-    vec2 r = vec2(fbm(p + 4.0 * q + vec2(1.7, 9.2)), fbm(p + 4.0 * q + vec2(8.3, 2.8)));
-    return fbm(p + 4.0 * r);
-  }
-
-  float dissolve(vec2 uv) {
-    return smoothstep(0.0, 0.1, pattern(uv * u_foldFrequency - u_time * u_dissolveSpeed * 0.5));
-  }
-
-  vec2 refract(vec2 uv, vec2 mouse) {
-    vec2 delta = uv - mouse;
-    float dist = length(delta);
-    float strength = exp(-dist * dist * 12.0) * 0.06;
-    return uv + normalize(delta + 0.001) * strength;
-  }
-
-  void main() {
-    vec2 uv = vUv * 2.0 - 1.0;
-    uv.x *= u_resolution.x / u_resolution.y;
-    uv = abs(uv);
-    uv = refract(uv, u_mouse);
-    float ink = dissolve(uv);
-    vec3 shadowColor = vec3(0.02, 0.06, 0.1);
-    vec3 highlightColor = vec3(0.0, 0.76, 0.66);
-    vec3 color = mix(shadowColor, highlightColor, ink);
-    float vignette = 1.0 - length(vUv - 0.5) * 0.6;
-    color *= vignette;
-    gl_FragColor = vec4(color, 1.0);
-  }
-`;
+import { ArrowRight } from "@/components/Icons";
 
 export const HeroSection = () => {
-  const canvasRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
-  const mouseRef = useRef({ x: 0.5, y: 0.5 });
-  const mouseTarget = useRef({ x: 0.5, y: 0.5 });
-  const [videoOpen, setVideoOpen] = useState(false);
-  const text3dRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container = canvasRef.current;
-    if (!container) return;
-
-    const isMobile = window.innerWidth < 768;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-    const uniforms = {
-      u_time: { value: 0 },
-      u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-      u_resolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
-      u_foldFrequency: { value: 0.65 },
-      u_dissolveSpeed: { value: isMobile ? 0.15 : 0.25 },
-    };
-
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    });
-
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    let animId: number;
-    const clock = new THREE.Clock();
-
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
-      uniforms.u_time.value = clock.getElapsedTime();
-      mouseRef.current.x += (mouseTarget.current.x - mouseRef.current.x) * 0.08;
-      mouseRef.current.y += (mouseTarget.current.y - mouseRef.current.y) * 0.08;
-      uniforms.u_mouse.value.set(mouseRef.current.x, mouseRef.current.y);
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      if (!container) return;
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      uniforms.u_resolution.value.set(container.clientWidth, container.clientHeight);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseTarget.current.x = e.clientX / window.innerWidth;
-      mouseTarget.current.y = 1.0 - e.clientY / window.innerHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-    if (!isMobile) {
-      window.addEventListener("mousemove", handleMouseMove);
-    }
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      renderer.dispose();
-      geometry.dispose();
-      material.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
-    };
-  }, []);
-
-  // Hero load animation
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
-    const badge = hero.querySelector(".hero-badge");
-    const h1 = hero.querySelector(".hero-h1");
-    const sub = hero.querySelector(".hero-sub");
-    const ctas = hero.querySelector(".hero-ctas");
-    const trust = hero.querySelector(".hero-trust");
-
-    gsap.set([badge, h1, sub, ctas, trust], { opacity: 0, y: (i) => [20, 30, 20, 15, 10][i] });
-
-    const tl = gsap.timeline({ delay: 0.2 });
-    tl.to(badge, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" })
-      .to(h1, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out" }, "+=0.2")
-      .to(sub, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, "+=0.1")
-      .to(ctas, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, "+=0.1")
-      .to(trust, { opacity: 1, duration: 0.5, ease: "power2.out" }, "+=0.1");
-
-    return () => { tl.kill(); };
-  }, []);
-
-  // 3D Floating Text Animation
-  useEffect(() => {
-    const container = text3dRef.current;
-    if (!container || window.innerWidth < 768) return;
-
-    let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer;
-    let textMesh: THREE.Mesh;
-    let animId: number;
-
-    const initScene = () => {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.z = 350;
-
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.appendChild(renderer.domElement);
-
-      const loader = new FontLoader();
-      loader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", (font) => {
-        const geo = new TextGeometry("AQUAREDOX", {
-          font,
-          size: 50,
-          depth: 35,
-          bevelEnabled: true,
-          bevelThickness: 5,
-          bevelSize: 3,
-          bevelSegments: 3,
-        });
-        geo.computeBoundingBox();
-        if (geo.boundingBox) {
-          geo.translate(-geo.boundingBox.max.x / 2, -geo.boundingBox.max.y / 2, 0);
-        }
-        const mat = new THREE.MeshBasicMaterial({
-          color: 0x00C2A8,
-          transparent: true,
-          opacity: 0.08,
-        });
-        textMesh = new THREE.Mesh(geo, mat);
-        scene.add(textMesh);
+    const ctx = gsap.context(() => {
+      // Intro animation for text
+      gsap.from(".hero-text-elem", {
+        y: 40,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.2
       });
 
-      const animate = () => {
-        animId = requestAnimationFrame(animate);
-        if (textMesh) {
-          textMesh.rotation.y += 0.003;
-          textMesh.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
-        }
-        renderer.render(scene, camera);
-      };
-      animate();
+      // Animate the CSS ions (bubbles) inside the chamber
+      gsap.to(".ion-particle", {
+        y: -350,
+        opacity: 0,
+        duration: "random(2, 4)",
+        stagger: {
+          each: 0.2,
+          repeat: -1
+        },
+        ease: "none"
+      });
 
-      const handleResize = () => {
-        if (!container) return;
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-      };
-      window.addEventListener("resize", handleResize);
+      // Float the glass badges for an interactive 3D feel
+      gsap.to(".glass-badge-1", {
+        y: -15,
+        rotation: -2,
+        duration: 3,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut"
+      });
 
-      return { handleResize };
-    };
+      gsap.to(".glass-badge-2", {
+        y: 15,
+        rotation: 2,
+        duration: 3.5,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+        delay: 0.5
+      });
+      
+      // Floating the entire chamber slightly 
+      gsap.to(".chamber-wrapper", {
+        y: -10,
+        duration: 4,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut"
+      });
+    }, heroRef);
 
-    const cleanup = initScene();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      if (cleanup) {
-        window.removeEventListener("resize", cleanup.handleResize);
-      }
-      if (container.contains(renderer?.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
-    };
+    return () => ctx.revert();
   }, []);
 
+  const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <section ref={heroRef} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden pb-16" style={{ minHeight: "600px" }}>
-      {/* WebGL Canvas */}
-      <div ref={canvasRef} className="absolute inset-0 z-[1]" />
+    <section ref={heroRef} className="relative min-h-[100dvh] flex items-center overflow-hidden bg-[#FAFCFF] pt-28 pb-32">
+      
+      {/* Dynamic Background Gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-electric-teal/15 via-amber-gold/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-deep-navy/5 via-transparent to-transparent blur-3xl pointer-events-none" />
 
-      {/* 3D Text Background */}
-      <div ref={text3dRef} className="absolute inset-0 z-[1] hidden md:block pointer-events-none" />
+      {/* Grid Noise Pattern */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] pointer-events-none opacity-40 mix-blend-multiply" />
 
-      {/* Dark scrim overlay - increased opacity for better text visibility */}
-      <div className="absolute inset-0 z-[2] bg-deep-navy/60 backdrop-blur-[1px]" />
+      <div className="container-main relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-8 items-center h-full">
+        
+        {/* Left Content - The Pitch */}
+        <div className="flex flex-col items-start text-left pt-6 lg:pt-0">
+          <div className="hero-text-elem inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-border-light shadow-sm mb-8 hover:shadow-md transition-shadow cursor-default group">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-teal opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-electric-teal"></span>
+            </span>
+            <span className="text-[0.65rem] sm:text-xs font-bold uppercase tracking-widest text-charcoal group-hover:text-electric-teal transition-colors">
+              Advanced Redox Technology
+            </span>
+          </div>
 
-      {/* Content */}
-      <div className="relative z-[3] container-main flex flex-col items-center text-center pt-20" style={{ maxWidth: "900px" }}>
-        {/* Badge */}
-        <div className="hero-badge inline-flex items-center gap-2 px-5 py-2 rounded-full bg-electric-teal/15 border border-electric-teal/30 text-electric-teal text-body-sm font-medium mb-6">
-          <span role="img" aria-label="lightning">⚡</span> Chemical-Free Water Softening Technology
-        </div>
+          <h1 className="hero-text-elem font-extrabold text-[clamp(2.8rem,5.5vw,5.5rem)] leading-[1.05] tracking-tighter text-charcoal mb-6">
+            Next-Gen <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-teal directly to-[#018a78] relative inline-block">
+              Scale Prevention
+              <svg className="absolute w-full h-3 -bottom-1 sm:-bottom-2 left-0 text-electric-teal/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="4" fill="transparent" strokeLinecap="round"/>
+              </svg>
+            </span>
+          </h1>
 
-        {/* H1 - Changed to bold sans-serif font */}
-        <h1 className="hero-h1 font-bold text-h1 text-white mb-5" style={{ textShadow: "0 2px 20px rgba(0, 0, 0, 0.8), 0 4px 40px rgba(10, 37, 64, 0.6)", fontFamily: "Inter, system-ui, sans-serif" }}>
-          India's Most Advanced
-          <br />
-          Hard Water Solution
-        </h1>
-
-        {/* Subheadline */}
-        <p className="hero-sub text-body text-white/85 max-w-[680px] mx-auto mb-8">
-          AquaRedox permanently eliminates scale buildup using MMO-coated titanium electrodes — no salt, no chemicals, no ion exchange. Just pure, soft water. Forever.
-        </p>
-
-        {/* CTAs */}
-        <div className="hero-ctas flex flex-col sm:flex-row items-center gap-4">
-          <button 
-            onClick={() => setVideoOpen(true)}
-            className="btn-secondary-white"
-          >
-            Watch Demo Video <ArrowRight size={16} />
-          </button>
-          <a href="#technology" className="btn-secondary-white" onClick={(e) => { e.preventDefault(); document.getElementById("technology")?.scrollIntoView({ behavior: "smooth" }); }}>
-            See How It Works <ArrowDown size={16} />
-          </a>
-          <a href="#contact" className="btn-primary relative overflow-hidden" onClick={(e) => { e.preventDefault(); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); }}>
-            Get a Free Site Assessment <ArrowRight size={16} />
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent w-1/2 h-full animate-shimmer" />
-          </a>
-        </div>
-
-        {/* Trust line - Fixed visibility with better contrast and padding */}
-        <div className="hero-trust mt-12 mb-8">
-          <div className="w-16 h-[2px] bg-electric-teal/40 mx-auto mb-4" />
-          <p className="text-body text-white font-medium px-4" style={{ textShadow: "0 2px 10px rgba(0, 0, 0, 0.8)" }}>
-            Trusted by factories, poultry farms, hotels & MSMEs across Tamil Nadu
+          <p className="hero-text-elem text-lg sm:text-xl text-charcoal-light max-w-[550px] mb-10 leading-relaxed font-medium">
+            AquaRedox completely eliminates scale buildup using industrial-grade MMO-coated titanium electrodes. <strong className="text-charcoal font-bold">Zero salt. Zero chemicals. Zero maintenance.</strong> Ultimate performance engineered for your enterprise.
           </p>
+
+          <div className="hero-text-elem flex flex-col sm:flex-row items-center gap-4 w-full h-full sm:w-auto relative z-20">
+            <a href="#contact" className="group w-full sm:w-auto relative inline-flex justify-center items-center gap-2 px-8 py-4 bg-charcoal text-white font-semibold rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(10,37,64,0.3)]" onClick={(e) => scrollTo(e, "contact")}>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              Get a Free Quote <span className="group-hover:translate-x-1 transition-transform inline-flex"><ArrowRight size={18} /></span>
+            </a>
+            
+            <button 
+              className="group w-full sm:w-auto flex justify-center items-center gap-3 px-8 py-4 bg-white text-charcoal font-bold rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all hover:border-electric-teal/30"
+            >
+              <div className="w-8 h-8 rounded-full bg-charcoal/5 flex items-center justify-center group-hover:bg-electric-teal/10 transition-colors">
+                <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-charcoal group-hover:border-l-electric-teal border-b-[5px] border-b-transparent ml-0.5 transition-colors" />
+              </div>
+              Watch Demo
+            </button>
+          </div>
+        </div>
+
+        {/* Right Content - Visual Innovation (CSS Art Dashboard) */}
+        <div className="hero-text-elem relative w-full h-[450px] lg:h-[600px] flex items-center justify-center">
+           
+           {/* Glow behind the chamber */}
+           <div className="absolute w-[60%] h-[60%] rounded-full bg-electric-teal/20 blur-[80px] animate-pulse-slow" />
+
+           <div className="chamber-wrapper relative z-10 w-[140px] md:w-[180px] h-[350px] md:h-[450px] rounded-full bg-gradient-to-tr from-white to-gray-50 shadow-[0_20px_60px_rgba(0,0,0,0.1),inset_0_-10px_20px_rgba(0,0,0,0.05)] border-4 border-white flex justify-center p-2 isolate">
+              
+              {/* Glass Reaction Chamber */}
+              <div className="w-full h-full rounded-full bg-[#0A2540] overflow-hidden relative shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)]">
+                 
+                 {/* Titanium Anode (Center Rod) */}
+                 <div className="absolute top-[10%] bottom-[10%] left-1/2 -translate-x-1/2 w-[16px] md:w-[24px] bg-gradient-to-r from-gray-400 via-white to-gray-500 rounded-full shadow-[0_0_20px_#00C2A8]" />
+                 
+                 {/* MMO Aura Glow */}
+                 <div className="absolute top-[10%] bottom-[10%] left-1/2 -translate-x-1/2 w-[30px] md:w-[40px] bg-electric-teal/50 blur-[15px] rounded-full" />
+
+                 {/* Moving Ions (Generated via Array for CSS animation) */}
+                 {Array.from({ length: 25 }).map((_, i) => (
+                    <div key={i} className="ion-particle absolute bottom-[-20px] w-1.5 md:w-2.5 h-1.5 md:h-2.5 rounded-full bg-white/90 blur-[1px] shadow-[0_0_5px_white]" style={{ left: `${15 + Math.random() * 70}%` }} />
+                 ))}
+                 
+                 {/* Water gradient overlay */}
+                 <div className="absolute inset-0 bg-gradient-to-t from-electric-teal/30 to-transparent mix-blend-overlay" />
+              </div>
+
+              {/* Floating Glass Badge 1 (Left) */}
+              <div className="glass-badge-1 absolute top-[25%] -left-[110px] md:-left-[150px] bg-white/70 backdrop-blur-xl border border-white/50 p-3 md:p-4 rounded-2xl shadow-xl flex items-center gap-3 w-max">
+                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-deep-navy/5 text-deep-navy border border-gray-100 flex items-center justify-center font-bold text-xs md:text-sm shadow-inner">
+                    Ca²⁺
+                 </div>
+                 <div className="flex flex-col">
+                    <span className="text-[0.65rem] md:text-xs font-bold text-charcoal/60 uppercase tracking-wider">Status</span>
+                    <span className="text-xs md:text-sm font-extrabold text-charcoal">Neutralized</span>
+                 </div>
+              </div>
+
+              {/* Floating Glass Badge 2 (Right) */}
+              <div className="glass-badge-2 absolute bottom-[25%] -right-[110px] md:-right-[160px] bg-white/70 backdrop-blur-xl border border-white/50 p-3 md:p-4 rounded-2xl shadow-xl flex items-center gap-3 w-max">
+                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-electric-teal/10 flex items-center justify-center text-electric-teal shadow-inner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                 </div>
+                 <div className="flex flex-col">
+                    <span className="text-[0.65rem] md:text-xs font-bold text-charcoal/60 uppercase tracking-wider">System</span>
+                    <span className="text-xs md:text-sm font-extrabold text-charcoal">100% Efficient</span>
+                 </div>
+              </div>
+
+           </div>
         </div>
       </div>
-
-      {/* Video Dialog */}
-      <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-        <DialogContent className="max-w-6xl w-[95vw] sm:w-[90vw] md:w-[85vw] p-0 bg-deep-navy border-electric-teal/30">
-          <DialogHeader className="p-6 pb-0">
-            <DialogTitle className="text-white text-xl">Demo Video</DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video w-full bg-black">
-            {videoOpen && (
-              <video
-                className="w-full h-full"
-                controls
-                autoPlay
-                src="/demo.mp4"
-              >
-                Your browser does not support the video tag.
-              </video>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      
+      {/* 3-Layer 3D Depth Wave Divider transitioning into deep-navy TrustBarSection */}
+      <div className="absolute bottom-[-1px] left-0 w-full overflow-hidden leading-none z-[10] text-deep-navy">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[60px] md:h-[100px] lg:h-[140px]">
+          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V120H0Z" fill="currentColor" opacity=".25"></path>
+          <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-23.8V120H0Z" fill="currentColor" opacity=".5"></path>
+          <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V120H0Z" fill="currentColor"></path>
+        </svg>
+      </div>
     </section>
   );
 };

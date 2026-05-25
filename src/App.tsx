@@ -45,7 +45,6 @@ function App() {
 
       <main id="main-content">
         <HeroSection />
-        <SectionDivider variant="dark-to-light" />
         <TrustBarSection />
         <SectionDivider variant="light-to-dark" />
         <ProblemSolutionSection />
