@@ -108,7 +108,7 @@ export const HeroSection = () => {
           <div className="hero-text-elem flex flex-col sm:flex-row items-center gap-4 w-full h-full sm:w-auto relative z-20">
             <a href="#contact" className="group w-full sm:w-auto relative inline-flex justify-center items-center gap-2 px-8 py-4 bg-charcoal text-white font-semibold rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(10,37,64,0.3)]" onClick={(e) => scrollTo(e, "contact")}>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              Get a Free Quote <span className="group-hover:translate-x-1 transition-transform inline-flex"><ArrowRight size={18} /></span>
+              Request Quote <span className="group-hover:translate-x-1 transition-transform inline-flex"><ArrowRight size={18} /></span>
             </a>
             
             <button 

@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "What is the price of an SSK Scale Remover?",
-    a: "The SSK Scale Remover starts at <strong>\u20B925,000</strong> for residential and small commercial units. Industrial and custom systems are priced based on water volume, hardness level, and specific application requirements. Contact us for a <strong>free site assessment and personalised quote</strong>.",
+    a: "The SSK Scale Remover starts at <strong>\u20B925,000</strong> for residential and small commercial units. Industrial and custom systems are priced based on water volume, hardness level, and specific application requirements. Contact us for a <strong>Technical Consultation and personalised quote</strong>.",
   },
   {
     q: "Does AquaRedox work for industrial and commercial applications?",

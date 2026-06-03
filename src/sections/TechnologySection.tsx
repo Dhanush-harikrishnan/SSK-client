@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 const steps = [
   { num: "1", title: "Electrolysis Initiated", desc: "MMO-coated titanium electrodes apply a controlled electrolytic field to incoming water. No chemicals enter the water at any stage. The process begins instantly as water flows through the chamber.", svg: ElectrodeSVG },
   { num: "2", title: "Ion Conversion via REDOX", desc: "The electrochemical REDOX reaction converts hardness-causing divalent ions (Ca\u00B2\u207A, Mg\u00B2\u207A) into monovalent ionic states. These altered ions pass through pipes without bonding to surfaces \u2014 permanently neutralised.", svg: IonConvertSVG },
-  { num: "3", title: "Scale-Free Water, Permanently", desc: "Unlike traditional softeners that temporarily exchange ions (and require constant salt), AquaRedox permanently alters mineral behaviour. Your pipes, appliances, and boilers stay clean indefinitely \u2014 guaranteed.", svg: CleanPipeSVG },
+  { num: "3", title: "Scale-Free Water, Permanently", desc: "Unlike traditional softeners that temporarily exchange ions (and require constant salt), AquaRedox permanently alters mineral behaviour. Your pipes, industrial equipment, and boilers stay clean indefinitely \u2014 guaranteed.", svg: CleanPipeSVG },
 ];
 
 const tableRows = [
