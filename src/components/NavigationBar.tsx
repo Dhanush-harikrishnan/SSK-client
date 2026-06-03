@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Hamburger, CloseX } from "./Icons";
 
 const NAV_LINKS = [
@@ -19,7 +20,7 @@ export const NavigationBar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 60);
 
       // Only track scroll spy on homepage
       if (location.pathname === "/") {
@@ -46,7 +47,6 @@ export const NavigationBar = () => {
     setMobileOpen(false);
 
     if (isAnchor) {
-      // If we are already on the homepage, prevent default and scroll
       if (location.pathname === "/") {
         e.preventDefault();
         const targetId = href.split("#")[1];
@@ -55,7 +55,6 @@ export const NavigationBar = () => {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }
-      // If we are not on the homepage, let the Link navigate to /#id
     }
   }, [location]);
 
@@ -70,15 +69,13 @@ export const NavigationBar = () => {
     <>
       <nav
         ref={navRef}
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-400 ${
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
           scrolled || location.pathname !== "/"
-            ? "bg-deep-navy/[0.92] backdrop-blur-xl shadow-nav h-14"
-            : "bg-transparent h-20"
+            ? "bg-[#020C1B]/85 backdrop-blur-[16px] border-b border-[#0070F3]/20 shadow-[0_4px_24px_rgba(0,0,0,0.3)] h-14"
+            : "bg-transparent h-20 border-b-0 shadow-none"
         }`}
-        style={{ transitionDuration: "400ms" }}
       >
         <div className="container-main h-full flex items-center justify-between">
-          {/* Logo */}
           <Link
             to="/"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -87,26 +84,28 @@ export const NavigationBar = () => {
             <img src="/logo.png" alt="SSK TI ANODE" className="h-16 w-auto" />
           </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8 h-full">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 onClick={(e) => handleNavClick(e, link.href, link.isAnchor)}
-                className={`relative hover:text-electric-teal transition-colors duration-200 text-[0.95rem] font-medium ${
-                  scrolled || location.pathname !== "/" ? "text-white/90" : "text-charcoal/90"
-                } ${isActive(link) ? "text-electric-teal" : ""}`}
+                className={`relative h-full flex items-center hover:text-[#0070F3] transition-colors duration-200 text-[0.95rem] font-medium ${
+                  scrolled || location.pathname !== "/" ? "text-white/90" : "text-white/90"
+                } ${isActive(link) ? "text-[#0070F3]" : ""}`}
               >
                 {link.label}
                 {isActive(link) && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-electric-teal" />
+                  <motion.div
+                    layoutId="navIndicator"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0070F3]"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
                 )}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA */}
           <Link
             to="/#contact"
             onClick={(e) => handleNavClick(e, "/#contact", true)}
@@ -115,9 +114,8 @@ export const NavigationBar = () => {
             Request Quote
           </Link>
 
-          {/* Mobile Hamburger */}
           <button
-            className={`lg:hidden p-2 ${scrolled || location.pathname !== "/" ? "text-white" : "text-charcoal"}`}
+            className={`lg:hidden p-2 ${scrolled || location.pathname !== "/" ? "text-white" : "text-white"}`}
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
@@ -126,12 +124,11 @@ export const NavigationBar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-[110] bg-deep-navy transition-all duration-300 lg:hidden ${
+        className={`fixed inset-0 z-[110] bg-[#0A1628] transition-all duration-300 lg:hidden ${
           mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
-        style={{ transitionDuration: "300ms" }}
       >
         <div className="container-main h-full flex flex-col items-center justify-center gap-8">
           <button
@@ -147,7 +144,7 @@ export const NavigationBar = () => {
               to={link.href}
               onClick={(e) => handleNavClick(e, link.href, link.isAnchor)}
               className={`text-2xl font-semibold transition-colors ${
-                isActive(link) ? "text-electric-teal" : "text-white"
+                isActive(link) ? "text-[#0070F3]" : "text-white"
               }`}
             >
               {link.label}

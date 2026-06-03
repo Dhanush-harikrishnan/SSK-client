@@ -1,21 +1,23 @@
+
 interface SectionDividerProps {
-  variant: "dark-to-light" | "light-to-dark";
+  color: string;
+  direction?: "left" | "right";
+  className?: string;
 }
 
-export const SectionDivider = ({ variant }: SectionDividerProps) => {
-  const fill = variant === "dark-to-light" ? "#F7F9FC" : "#0A2540";
+export const SectionDivider = ({ color, direction = "right", className = "" }: SectionDividerProps) => {
   return (
-    <div className="w-full" style={{ height: "clamp(40px, 6vw, 80px)", marginTop: "-1px" }}>
+    <div className={`w-full overflow-hidden ${className}`} style={{ height: "clamp(40px, 6vw, 80px)", marginTop: "-1px" }}>
       <svg
-        viewBox="0 0 1920 80"
+        viewBox="0 0 1440 60"
         preserveAspectRatio="none"
         className="w-full h-full block"
         aria-hidden="true"
       >
-        {variant === "dark-to-light" ? (
-          <path d="M0,80 C320,0 640,80 960,40 C1280,0 1440,60 1920,80 L1920,0 L0,0 Z" fill={fill} />
+        {direction === "right" ? (
+          <polygon points="0,0 1440,60 1440,0" fill={color} />
         ) : (
-          <path d="M0,0 C320,80 640,0 960,40 C1280,80 1440,20 1920,0 L1920,80 L0,80 Z" fill={fill} />
+          <polygon points="0,60 1440,0 1440,60" fill={color} />
         )}
       </svg>
     </div>
