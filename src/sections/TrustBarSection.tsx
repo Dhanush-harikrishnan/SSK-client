@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
+import CountUp from "react-countup";
+import { useInView } from "react-intersection-observer";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 const stats = [
   { value: 500, suffix: "+", label: "Systems Installed" },
@@ -9,55 +12,59 @@ const stats = [
 ];
 
 export const TrustBarSection = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [counts, setCounts] = useState([0, 0, 0, 0, 0]);
-  const [animated, setAnimated] = useState(false);
+  const [ref, inView] = useInView({ threshold: 0.3, triggerOnce: true });
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !animated) {
-          setAnimated(true);
-          stats.forEach((stat, i) => {
-            const duration = 2000;
-            const startTime = performance.now();
-            const animate = (now: number) => {
-              const elapsed = now - startTime;
-              const progress = Math.min(elapsed / duration, 1);
-              const eased = 1 - Math.pow(1 - progress, 3);
-              setCounts(prev => {
-                const next = [...prev];
-                next[i] = Math.round(stat.value * eased);
-                return next;
-              });
-              if (progress < 1) requestAnimationFrame(animate);
-            };
-            requestAnimationFrame(animate);
-          });
-        }
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [animated]);
+    if (inView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [inView, hasAnimated]);
 
   return (
-    <section ref={sectionRef} className="bg-gradient-to-b from-deep-navy to-[#0a2540] py-12 lg:py-16">
-      <div className="container-main">
-        {/* Stats row */}
+    <section ref={ref} className="relative bg-gradient-to-b from-deep-navy to-[#0a2540] py-12 lg:py-16 overflow-hidden">
+      {/* Scan line effect */}
+      {hasAnimated && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(0,112,243,0.15), transparent)",
+            width: "30%",
+            height: "100%",
+            animation: "scanLine 1.5s ease-in-out forwards"
+          }}
+        />
+      )}
+      <style>{`
+        @keyframes scanLine {
+          0% { transform: translateX(-100%); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateX(400%); opacity: 0; }
+        }
+      `}</style>
+
+      <div className="container-main relative z-10">
         <div className="flex flex-wrap justify-center gap-8 lg:gap-12 text-center">
           {stats.map((stat, i) => (
-            <div key={stat.label} className="flex-1 min-w-[140px] transform hover:scale-105 transition-transform duration-300">
+            <AnimateOnScroll key={stat.label} delay={0.1 + i * 0.1} direction="up" className="flex-1 min-w-[140px]">
               <div className="text-4xl lg:text-5xl text-[#0070F3] font-bold tracking-tight">
-                {counts[i]}{stat.suffix}
+                {hasAnimated ? (
+                  <CountUp
+                    start={0}
+                    end={stat.value}
+                    duration={2.5}
+                    suffix={stat.suffix}
+                    enableScrollSpy={false}
+                  />
+                ) : (
+                  "0" + stat.suffix
+                )}
               </div>
               <div className="text-xs lg:text-sm text-white/90 mt-3 font-semibold uppercase tracking-wider">
                 {stat.label}
               </div>
-            </div>
+            </AnimateOnScroll>
           ))}
         </div>
       </div>

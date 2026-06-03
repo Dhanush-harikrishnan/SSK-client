@@ -11,28 +11,46 @@ import { OEMBannerSection } from "@/sections/OEMBannerSection";
 import { CountriesSection } from "@/sections/CountriesSection";
 import { TechnologyTeaser } from "@/sections/TechnologyTeaser";
 import { WhoWeServe } from "@/sections/WhoWeServe";
+import { HowItWorks } from "@/sections/HowItWorks";
 
 export default function Home() {
   return (
     <main id="main-content">
       <HeroSection />
-      <CountriesSection />
+      <SectionDivider color="#0A2540" direction="right" />
       <TrustBarSection />
-      <SectionDivider variant="light-to-dark" />
+
+      <SectionDivider color="#0A1628" direction="right" />
       <ProblemSolutionSection />
-      <SectionDivider variant="dark-to-light" />
+
+      <SectionDivider color="#0A1628" direction="left" />
       <TechnologyTeaser />
-      <SectionDivider variant="light-to-dark" />
+
+      <SectionDivider color="#F8F9FA" direction="right" />
       <BenefitsGridSection />
-      <SectionDivider variant="dark-to-light" />
+
+      <SectionDivider color="#f8fafc" direction="left" />
       <ProductsSection />
+
+      <SectionDivider color="#ffffff" direction="right" />
+      <HowItWorks />
+
+      <SectionDivider color="#ffffff" direction="left" />
+      <CountriesSection />
+
+      <SectionDivider color="#0f172a" direction="right" />
       <OEMBannerSection />
-      <SectionDivider variant="dark-to-light" />
+
+      <SectionDivider color="#F8F9FA" direction="left" />
       <CaseStudiesSection />
-      <SectionDivider variant="dark-to-light" />
+
+      <SectionDivider color="#ffffff" direction="right" />
       <WhoWeServe />
+
+      <SectionDivider color="#F8F9FA" direction="left" />
       <FAQSection />
-      <SectionDivider variant="light-to-dark" />
+
+      <SectionDivider color="#020C1B" direction="right" />
       <ContactSection />
     </main>
   );

@@ -5,6 +5,7 @@ import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { FooterSection } from "@/sections/FooterSection";
+import { PageLoader } from "@/components/PageLoader";
 
 import Home from "@/pages/Home";
 import TechnologyPage from "@/pages/TechnologyPage";
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <PageLoader />
       <div className="font-inter" style={{ filter: "hue-rotate(var(--hue-rotate, -5deg))" }}>
         {/* Skip to content */}
         <a
