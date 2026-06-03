@@ -2,24 +2,35 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SectionLabel } from "@/components/SectionLabel";
-import { AlertTriangle, FlameIcon, BrokenWrench, SkinIcon, InfinityCost, CheckCircle } from "@/components/Icons";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const painPoints = [
-  { icon: AlertTriangle, title: "Scale clogs pipes and reduces water flow by up to 70%", desc: "Mineral deposits accumulate in plumbing, choking water pressure and forcing expensive pipe replacements." },
-  { icon: FlameIcon, title: "Heating elements lose efficiency — energy bills rise 20–30%", desc: "Every millimetre of scale on your boiler or geyser forces it to work harder, burning extra electricity or fuel every single day." },
-  { icon: BrokenWrench, title: "Water heaters, geysers & boilers fail 3× faster", desc: "Scale-induced corrosion and overheating cut equipment lifespan dramatically. Replacement costs pile up year after year." },
-  { icon: SkinIcon, title: "Skin becomes dry; fabrics lose softness in laundry", desc: "Hard water strips natural oils from skin and leaves mineral residue on clothes, making them rough and faded." },
-  { icon: InfinityCost, title: "Chemical softeners add ongoing cost — forever", desc: "Salt-based softeners demand weekly refills, regular maintenance, and never-ending chemical purchases. The expense never stops." },
-];
-
-const solutions = [
-  "MMO-coated titanium electrodes trigger a precise REDOX reaction",
-  "Ca\u00B2\u207A and Mg\u00B2\u207A ions are permanently converted \u2014 they cannot form scale",
-  "Self-cleaning design \u2014 no backwash, no salt refills, no service visits",
-  "Real-time monitoring dashboard included",
-  "Typical ROI within 18\u201324 months",
+  {
+    problem: "Scale deposits blocking heat exchangers in cooling towers",
+    solution: "MMO titanium anode-based electrolysis system — no chemicals, no salt",
+    businessImpact: "Reduced heat exchanger maintenance frequency. Lower OPEX. Eliminates chemical storage compliance cost."
+  },
+  {
+    problem: "Heating elements lose efficiency — energy bills rise 20–30%",
+    solution: "Ca²⁺ and Mg²⁺ ions are permanently converted — they cannot form scale",
+    businessImpact: "Restores thermal transfer efficiency. Lowers fuel and electricity consumption."
+  },
+  {
+    problem: "Water heaters, geysers & boilers fail 3× faster",
+    solution: "Self-cleaning REDOX design — no backwash, no salt refills, no service visits",
+    businessImpact: "Extends equipment lifespan. Dramatically reduces replacement CapEx."
+  },
+  {
+    problem: "Sourcing consistent MMO anodes from unreliable suppliers causes delays and quality failures",
+    solution: "Direct anode supply from in-house manufacturer — custom spec, repeat orders, technical support",
+    businessImpact: "Reliable supply chain. Reduced rejection rate. Single-source accountability."
+  },
+  {
+    problem: "Industrial effluent failing TNPCB/CPCB norms, risking shutdown notices",
+    solution: "Electrolytic ETP (E-ETP) — chemical-free, compact, low-maintenance",
+    businessImpact: "Achieves discharge compliance. Avoids penalty and operational interruption."
+  }
 ];
 
 export const ProblemSolutionSection = () => {
@@ -52,37 +63,28 @@ export const ProblemSolutionSection = () => {
   return (
     <section ref={sectionRef} className="bg-deep-navy section-padding">
       <div className="container-main">
-        <div className="reveal-item"><SectionLabel text="THE HARD WATER CRISIS" /></div>
-        <h2 className="reveal-item text-h2 text-white mb-12">Hard water is silently destroying your equipment</h2>
+        <div className="reveal-item text-center">
+          <SectionLabel text="THE HARD WATER CRISIS" />
+          <h2 className="text-h2 text-white mb-12 mt-4">Hard water is silently destroying your equipment</h2>
+        </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Problem Column */}
-          <div>
-            {painPoints.map((pp, i) => (
-              <div key={i} className={`reveal-item flex gap-4 py-4 ${i < painPoints.length - 1 ? "border-b border-white/[0.08]" : ""}`}>
-                <div className="flex-shrink-0 mt-1"><pp.icon size={24} /></div>
-                <div>
-                  <h3 className="text-h3 text-white font-semibold">{pp.title}</h3>
-                  <p className="text-body-sm text-white/60 mt-1">{pp.desc}</p>
-                </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {painPoints.map((item, i) => (
+            <div key={i} className="reveal-item bg-[#F8F9FA] border-l-4 border-[#0070F3] rounded-lg p-5 flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <span className="inline-block self-start px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">❌ Problem</span>
+                <p className="text-[#0A1628] text-sm font-semibold">{item.problem}</p>
               </div>
-            ))}
-          </div>
-
-          {/* Solution Column */}
-          <div>
-            <h3 className="reveal-item text-h3 text-electric-teal font-bold mb-8">
-              One system. Zero chemicals. Permanent results.
-            </h3>
-            {solutions.map((sol, i) => (
-              <div key={i} className={`reveal-item flex gap-4 py-4 ${i < solutions.length - 1 ? "border-b border-white/[0.08]" : ""}`}>
-                <div className="flex-shrink-0 mt-0.5"><CheckCircle size={24} /></div>
-                <p className={`text-h3 text-white font-semibold ${i === solutions.length - 1 ? "text-amber-gold" : ""}`}>
-                  {sol}
-                </p>
+              <div className="flex flex-col gap-1.5 border-t border-gray-200 pt-3">
+                <span className="inline-block self-start px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-[#0070F3]">✅ Solution</span>
+                <p className="text-[#555] text-sm">{item.solution}</p>
               </div>
-            ))}
-          </div>
+              <div className="flex flex-col gap-1.5 border-t border-gray-200 pt-3">
+                <span className="inline-block self-start px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700">📊 Business Impact</span>
+                <p className="text-green-800 text-sm font-medium">{item.businessImpact}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

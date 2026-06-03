@@ -1,23 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { FactoryIcon, PoultryIcon, GearIcon, HotelIcon } from "@/components/Icons";
 
 const stats = [
-  { value: 50, suffix: "+", label: "Projects Delivered" },
-  { value: 3, suffix: "", label: "States Served" },
-  { value: 10, suffix: "+", label: "Years Engineering Expertise" },
-  { value: 0, suffix: "", label: "Chemicals Used", prefix: "₹" },
-];
-
-const sectors = [
-  { icon: FactoryIcon, label: "MSME" },
-  { icon: PoultryIcon, label: "Poultry" },
-  { icon: GearIcon, label: "Industrial" },
-  { icon: HotelIcon, label: "Hotel" },
+  { value: 500, suffix: "+", label: "Systems Installed" },
+  { value: 5, suffix: "", label: "Countries Served" },
+  { value: 15, suffix: "+", label: "Industry Sectors" },
+  { value: 100, suffix: "%", label: "In-House Manufactured" },
+  { value: 10, suffix: "+", label: "Years Manufacturing Anodes" }
 ];
 
 export const TrustBarSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [counts, setCounts] = useState([0, 0, 0, 0]);
+  const [counts, setCounts] = useState([0, 0, 0, 0, 0]);
   const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
@@ -28,7 +21,6 @@ export const TrustBarSection = () => {
         if (entry.isIntersecting && !animated) {
           setAnimated(true);
           stats.forEach((stat, i) => {
-            if (stat.prefix) return; // ₹0 just displays
             const duration = 2000;
             const startTime = performance.now();
             const animate = (now: number) => {
@@ -53,27 +45,18 @@ export const TrustBarSection = () => {
   }, [animated]);
 
   return (
-    <section ref={sectionRef} className="bg-gradient-to-b from-deep-navy to-[#0a2540]" style={{ padding: "clamp(3rem, 5vw, 4rem) 0" }}>
+    <section ref={sectionRef} className="bg-gradient-to-b from-deep-navy to-[#0a2540] py-12 lg:py-16">
       <div className="container-main">
         {/* Stats row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+        <div className="flex flex-wrap justify-center gap-8 lg:gap-12 text-center">
           {stats.map((stat, i) => (
-            <div key={stat.label} className="text-center transform hover:scale-105 transition-transform duration-300">
-              <div className={`text-stat text-amber-gold font-bold ${stat.prefix ? "animate-glow-flash" : ""}`} style={{ textShadow: "0 0 20px rgba(255, 193, 7, 0.3)" }}>
-                {stat.prefix || ""}{stat.prefix ? stat.value : counts[i]}{stat.suffix}
+            <div key={stat.label} className="flex-1 min-w-[140px] transform hover:scale-105 transition-transform duration-300">
+              <div className="text-4xl lg:text-5xl text-[#0070F3] font-bold tracking-tight">
+                {counts[i]}{stat.suffix}
               </div>
-              <div className="text-body-sm text-white/80 mt-2 font-medium">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Industry icons */}
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mt-8 pt-6 border-t border-white/10">
-          {sectors.map((sector, i) => (
-            <div key={sector.label} className="flex items-center gap-2 hover:text-electric-teal transition-colors duration-300">
-              {i > 0 && <span className="text-white/20 mr-4 hidden sm:inline">|</span>}
-              <sector.icon size={24} />
-              <span className="text-body-sm text-white/70 font-medium">{sector.label}</span>
+              <div className="text-xs lg:text-sm text-white/90 mt-3 font-semibold uppercase tracking-wider">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>

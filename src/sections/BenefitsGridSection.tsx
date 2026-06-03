@@ -10,7 +10,7 @@ const benefits = [
   { icon: FlaskNo, title: "Zero Chemical Cost", desc: "No salt, no softening chemicals, no additives. Eliminate recurring treatment costs entirely and redirect that budget to growth." },
   { icon: DashboardIcon, title: "Real-Time Monitoring", desc: "IoT-enabled water quality dashboard. Know your water performance 24/7 with alerts, analytics, and remote diagnostics." },
   { icon: EnergyIcon, title: "Energy Savings", desc: "Scale-free heating elements consume up to 30% less electricity. Significant savings on industrial power bills from month one." },
-  { icon: WaterHeart, title: "Gentler on Skin & Fabric", desc: "Soft water means healthier skin, softer laundry, and less soap usage. A noticeable quality-of-life upgrade for homes and hospitality." },
+  { icon: WaterHeart, title: "Gentler on Skin & Fabric", desc: "Soft water means healthier skin, softer laundry, and less soap usage. A noticeable quality-of-life upgrade for commercial facilities and hospitality." },
   { icon: LeafEco, title: "Eco-Certified Process", desc: "No brine discharge, no harmful byproducts. AquaRedox is a genuinely sustainable water solution that meets environmental compliance." },
 ];
 
