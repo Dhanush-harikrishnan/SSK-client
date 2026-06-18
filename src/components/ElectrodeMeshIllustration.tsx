@@ -1,11 +1,11 @@
 export const ElectrodeMeshIllustration = () => {
   return (
-    <div className="relative w-full max-w-[300px] mx-auto animate-float">
+    <div className="relative w-full max-w-[300px] mx-auto animate-float pointer-events-none">
       <svg
         viewBox="0 0 300 380"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-[0_0_15px_rgba(0,112,243,0.3)]"
+        className="drop-shadow-[0_0_15px_rgba(0,112,243,0.3)] pointer-events-none"
       >
         {/* Frame */}
         <rect x="10" y="10" width="280" height="360" rx="8" stroke="#C0C9D5" strokeWidth="6" fill="rgba(192, 201, 213, 0.05)" />

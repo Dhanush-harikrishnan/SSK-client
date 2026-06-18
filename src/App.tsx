@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavigationBar } from "@/components/NavigationBar";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
@@ -11,22 +10,12 @@ import Home from "@/pages/Home";
 import TechnologyPage from "@/pages/TechnologyPage";
 
 function App() {
-  // Scroll-linked hue shift
-  useEffect(() => {
-    const handleScroll = () => {
-      const vh600 = window.innerHeight * 6;
-      const progress = Math.min(window.scrollY / vh600, 1);
-      const hue = -5 + progress * 15;
-      document.documentElement.style.setProperty("--hue-rotate", `${hue}deg`);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Removed scroll-linked hue shift to prevent unthrottled global repaints
 
   return (
     <BrowserRouter>
       <PageLoader />
-      <div className="font-inter" style={{ filter: "hue-rotate(var(--hue-rotate, -5deg))" }}>
+      <div className="font-inter">
         {/* Skip to content */}
         <a
           href="#main-content"
