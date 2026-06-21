@@ -8,7 +8,7 @@ export const HeroSection = () => {
 
   const fadeUp = {
     hidden: { opacity: 0, y: isReduced ? 0 : 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] } }
   };
 
   const container = {
@@ -96,7 +96,7 @@ export const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
             className="relative w-full max-w-lg aspect-square lg:aspect-auto"
           >
             {/* Subtle glow behind the illustration */}
