@@ -65,14 +65,12 @@ export const HeroSection = () => {
           >
             <a 
               href="#contact" 
-              onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} 
               className="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-lg bg-blue-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all select-none"
             >
               Request a Quote
             </a>
             <a 
               href="#products" 
-              onClick={(e) => { e.preventDefault(); document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); }} 
               className="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-lg px-8 py-3.5 text-sm font-semibold text-white ring-1 ring-inset ring-zinc-700 hover:bg-zinc-800 transition-all select-none group"
             >
               OEM Anode Supply 

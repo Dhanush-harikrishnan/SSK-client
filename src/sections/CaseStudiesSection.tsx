@@ -119,7 +119,7 @@ export const CaseStudiesSection = () => {
           <div>
             <a
               href="#contact"
-              onClick={(e) => { e.preventDefault(); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); }}
+             
               className="btn-primary"
             >
               Discuss Your Requirement →

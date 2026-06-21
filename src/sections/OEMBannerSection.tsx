@@ -51,7 +51,7 @@ export const OEMBannerSection = () => {
         <p className="text-lg text-white/80 mb-10 leading-relaxed max-w-3xl mx-auto">
           Are you a water treatment company, system integrator, or plant operator? We supply precision MMO-coated titanium anodes as core components for your own systems — backed by deep manufacturing expertise and custom fabrication capabilities.
         </p>
-        <a href="#contact" className="btn-primary shadow-[0_4px_20px_rgba(0,112,243,0.3)]" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}}>
+        <a href="#contact" className="btn-primary shadow-[0_4px_20px_rgba(0,112,243,0.3)]">
           Discuss OEM Supply Requirements
         </a>
       </div>

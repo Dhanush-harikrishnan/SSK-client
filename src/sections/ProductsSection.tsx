@@ -125,7 +125,7 @@ export const ProductsSection = () => {
                   </ul>
                 </div>
 
-                <a href="#contact" className="w-full py-3.5 px-6 rounded-lg font-semibold text-center transition-colors border-2 border-[#E2E8F0] text-[#0A1628] hover:border-[#0070F3] hover:bg-[#0070F3] hover:text-white mt-auto flex justify-center items-center gap-2" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <a href="#contact" className="w-full py-3.5 px-6 rounded-lg font-semibold text-center transition-colors border-2 border-[#E2E8F0] text-[#0A1628] hover:border-[#0070F3] hover:bg-[#0070F3] hover:text-white mt-auto flex justify-center items-center gap-2">
                   Enquire Now <ArrowRight size={16} />
                 </a>
               </div>
